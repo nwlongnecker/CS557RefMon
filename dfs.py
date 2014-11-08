@@ -6,6 +6,9 @@ import openSSL
 import fileIO
 import base64
 
+# Commented out all the code that encrypts a file before sending or retrieving it
+# This way the server can handle encryption
+
 def hash_filename(filename):
 	# I wanted to hash the filenames but had difficulty
 	# with it so I just store the filename in plaintext
@@ -22,18 +25,18 @@ def storeFile(peer_name, filename):
 	host_portno = int(random_host[1])
 
 	# Hash the filename and encrypt the contents before sending to the host
-	hashed_filename = hash_filename(filename)
+	# hashed_filename = hash_filename(filename)
 
 	file_contents = fileIO.readFile(filename)
-	encrypted_contents = openSSL.encrypt(keyfile, file_contents)
+	# encrypted_contents = openSSL.encrypt(keyfile, file_contents)
 
 	# Send the file to the host
 	net = client_side_connection.ClientSideConnection(
 		peer_name = peer_name, ip = host_ip, portno = host_portno)
 
 	net.send('Store')
-	net.send(hashed_filename)
-	net.send(encrypted_contents)
+	net.send(filename)
+	net.send(file_contents)
 
 	# Add the file to the filetable
 	filetable.addFile(peer_name, filename, str(net.getPeerInfo()))
@@ -49,18 +52,18 @@ def retrieveFile(peer_name, filename):
 	file_location = peer_ip.peer_map[file_host]
 
 	# Hash the filename so it matches what we stored on the host
-	hashed_filename = hash_filename(filename)
+	# hashed_filename = hash_filename(filename)
 
 	# Request the file from the host
 	net = client_side_connection.ClientSideConnection(
 		peer_name = peer_name, ip = file_location[0], portno = int(file_location[1]))
 
 	net.send('Retrieve')
-	net.send(hashed_filename)
+	net.send(filename)
 
 	# Wait for the file contents, then decrypt them and store them
-	encrypted_contents = net.recv()
-	file_contents = openSSL.decrypt(keyfile, encrypted_contents)
+	file_contents = net.recv()
+	# file_contents = openSSL.decrypt(keyfile, encrypted_contents)
 
 	fileIO.writeFile(filename, file_contents)
 
@@ -68,7 +71,7 @@ def retrieveFile(peer_name, filename):
 
 def deleteFile(peer_name, filename):
 	# Hash the filename so it matches what we stored on the host
-	hashed_filename = hash_filename(filename)
+	# hashed_filename = hash_filename(filename)
 
 	# Look up which host has the file
 	file_host = filetable.getFiletable(peer_name)[filename]
@@ -80,7 +83,32 @@ def deleteFile(peer_name, filename):
 		peer_name = peer_name, ip = file_location[0], portno = int(file_location[1]))
 
 	net.send('Delete')
-	net.send(hashed_filename)
+	net.send(filename)
 
 	net.done()
 	filetable.removeFile(peer_name, filename)
+
+def getFiletable(peer_name):
+	dictionary = {}
+	# Request a list of files we can access from every host
+	for hostname, host in peer_ip.peer_map.items():
+		print('Requesting file list from', str(eval(hostname)[4][0][1]))
+		host_ip = host[0]
+		host_portno = int(host[1])
+		net = client_side_connection.ClientSideConnection(
+			peer_name = peer_name, ip = host_ip, portno = host_portno)
+
+		net.send('My_Files')
+		files = net.recv()
+		# We know who the server is and we trust them so we know that they will send us a list
+		list_files = eval(files)
+		for filename in list_files:
+			dictionary[filename] = hostname
+
+		# Add the file to the filetable
+		# filetable.addFile(peer_name, filename, str(net.getPeerInfo()))
+		net.done()
+
+	filetable.storeFiletable(peer_name, dictionary)
+	return dictionary
+	

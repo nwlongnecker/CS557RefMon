@@ -2,6 +2,7 @@ import server_side_connection
 import openSSL
 import fileIO
 import base64
+import os
 
 def getPeerDir(peer_name, peer_info):
 	# I wanted to hash the peer directory but had difficulty
@@ -44,3 +45,7 @@ def deleteFile(peer_name, net):
 	client_common_name = peer_info[4][0][1]
 	print('Deleted', filename, 'for', client_common_name)
 
+def getFilenames(peer_name, net):
+	l = os.listdir(getPeerDir(peer_name, net.getPeerInfo()))
+	net.send(str(l))
+	print(peer_name, 'requested a list of their files')

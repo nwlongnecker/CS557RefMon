@@ -27,8 +27,9 @@ while True:
 			accepted = True
 
 	if(value == '1'):
+		dictionary = dfs.getFiletable(peer_name)
+		print()
 		print('Here are all of your files:')
-		dictionary = filetable.getFiletable(peer_name)
 		if dictionary:
 			for k, v in dictionary.items():
 				print(k)
@@ -68,12 +69,3 @@ while True:
 	elif(value == '5'):
 		print('Goodbye', peer_name)
 		sys.exit()
-
-# net = client_side_connection.ClientSideConnection(
-# 	peer_name = peer_name, ip = '127.0.0.1')
-
-# net.send('HelloServer!!')
-# print(net.recv())
-# net.send('hi')
-# print(net.recv())
-# net.done()

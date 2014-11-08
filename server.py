@@ -23,4 +23,7 @@ while True:
 	elif(command == 'Delete'):
 		server_methods.deleteFile(peer_name, net)
 
+	elif(command == 'My_Files'):
+		server_methods.getFilenames(peer_name, net)
+
 	net.done()
