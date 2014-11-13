@@ -32,7 +32,7 @@ while True:
 			accepted = True
 
 	if(value == '1'):
-		dictionary = dfs.getFiletable(peer_name)
+		dictionary = filetable.getFiletable(peer_name)
 		print()
 		print('Here are all of your files:')
 		if dictionary:
@@ -48,29 +48,29 @@ while True:
 			continue
 		# Store the file on a random peer and add it to the filetable
 		dfs.storeFile(peer_name, filename)
-		print(filename, 'stored')
+		# print(filename, 'stored')
 	elif(value == '3'):
 		print('Which file would you like to retrieve?')
 		filename = input()
-		if filename not in filetable.getFiletable(peer_name):
-			print('Could not find', filename, 'in your file system')
-			continue
+		# if filename not in filetable.getFiletable(peer_name):
+		# 	print('Could not find', filename, 'in your file system')
+		# 	continue
 		if fileIO.fileExists(filename):
 			print(filename, 'already exists on this machine!')
 			print('Please move the file to avoid overwrites')
 			continue
 		# Retrieve and restore the file
 		dfs.retrieveFile(peer_name, filename)
-		print(filename, 'restored')
+		# print(filename, 'restored')
 	elif(value == '4'):
 		print('Which file would you like to delete?')
 		filename = input()
-		if filename not in filetable.getFiletable(peer_name):
-			print('Could not find', filename, 'in your file system')
-			continue
+		# if filename not in filetable.getFiletable(peer_name):
+		# 	print('Could not find', filename, 'in your file system')
+		# 	continue
 		# Delete the file
 		dfs.deleteFile(peer_name, filename)
-		print(filename, 'deleted')
+		# print(filename, 'deleted')
 	elif(value == '5'):
 		refmon_client.add_authorization(peer_name)
 	elif(value == '6'):

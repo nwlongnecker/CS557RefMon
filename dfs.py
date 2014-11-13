@@ -19,10 +19,18 @@ def hash_filename(filename):
 def storeFile(peer_name, filename):
 	# Use this peer's private key as the keyfile for encrypting the file (Symmetric encryption)
 	keyfile = 'CA/' + peer_name + '/' + peer_name + '.key'
-	# Pick a random host for the file
-	random_host = random.choice(list(peer_ip.peer_map.values()))
-	host_ip = random_host[0]
-	host_portno = int(random_host[1])
+
+	print('What host would you like to store the file on?')
+	host_input = input()
+	file_location = None
+	# Request a list of files we can access from every host
+	for hostname, host in peer_ip.peer_map.items():
+		name = str(eval(hostname)[4][0][1])
+		if(host_input == name):
+			file_location = host
+	if(file_location == None):
+		print("Host not found")
+		return
 
 	# Hash the filename and encrypt the contents before sending to the host
 	# hashed_filename = hash_filename(filename)
@@ -32,7 +40,7 @@ def storeFile(peer_name, filename):
 
 	# Send the file to the host
 	net = client_side_connection.ClientSideConnection(
-		peer_name = peer_name, ip = host_ip, portno = host_portno)
+		peer_name = peer_name, ip = file_location[0], portno = int(file_location[1]))
 
 	net.send('Store')
 	net.send(filename)
@@ -49,9 +57,22 @@ def retrieveFile(peer_name, filename):
 	keyfile = 'CA/' + peer_name + '/' + peer_name + '.key'
 
 	# Look up which host has the file
-	file_host = filetable.getFiletable(peer_name)[filename]
-	# Use the peer_map to figure out the address of that host
-	file_location = peer_ip.peer_map[file_host]
+	if filename in filetable.getFiletable(peer_name):
+		file_host = filetable.getFiletable(peer_name)[filename]
+		# Use the peer_map to figure out the address of that host
+		file_location = peer_ip.peer_map[file_host]
+	else:
+		print('What host would you like to retrieve the file from?')
+		host_input = input()
+		file_location = None
+		# Request a list of files we can access from every host
+		for hostname, host in peer_ip.peer_map.items():
+			name = str(eval(hostname)[4][0][1])
+			if(host_input == name):
+				file_location = host
+		if(file_location == None):
+			print("Host not found")
+			return
 
 	# Hash the filename so it matches what we stored on the host
 	# hashed_filename = hash_filename(filename)
@@ -77,9 +98,22 @@ def deleteFile(peer_name, filename):
 	# hashed_filename = hash_filename(filename)
 
 	# Look up which host has the file
-	file_host = filetable.getFiletable(peer_name)[filename]
-	# Use the peer_map to figure out the address of that host
-	file_location = peer_ip.peer_map[file_host]
+	if filename in filetable.getFiletable(peer_name):
+		file_host = filetable.getFiletable(peer_name)[filename]
+		# Use the peer_map to figure out the address of that host
+		file_location = peer_ip.peer_map[file_host]
+	else:
+		print('What host would you like to delete the file from?')
+		host_input = input()
+		file_location = None
+		# Request a list of files we can access from every host
+		for hostname, host in peer_ip.peer_map.items():
+			name = str(eval(hostname)[4][0][1])
+			if(host_input == name):
+				file_location = host
+		if(file_location == None):
+			print("Host not found")
+			return
 
 	# Request the file from the host
 	net = client_side_connection.ClientSideConnection(
@@ -87,13 +121,15 @@ def deleteFile(peer_name, filename):
 
 	net.send('Delete')
 	net.send(filename)
-	
+
 	print(net.recv())
 
 	net.done()
-	filetable.removeFile(peer_name, filename)
+	if filename in filetable.getFiletable(peer_name):
+		filetable.removeFile(peer_name, filename)
 
 def getFiletable(peer_name):
+	# Not used ever. This function sucks.
 	dictionary = {}
 	# Request a list of files we can access from every host
 	for hostname, host in peer_ip.peer_map.items():

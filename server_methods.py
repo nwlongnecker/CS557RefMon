@@ -36,10 +36,15 @@ def retrieveFile(peer_name, net):
 	out, err = process.communicate()
 	os.chdir('..')
 
-	file_contents = fileIO.readFile(tmp_file_dir + '/' + filename)
-	net.send(file_contents)
+	result = out.decode("utf-8")
 
-	net.send(out.decode("utf-8"))
+	if(result == "Success"):
+		file_contents = fileIO.readFile(tmp_file_dir + '/' + filename)
+		net.send(file_contents)
+	else:
+		net.send(result)
+
+	net.send(result)
 	fileIO.removeFile(tmp_file_dir + '/' + filename)
 
 	print('Retrieved', filename, 'for', client_common_name)
