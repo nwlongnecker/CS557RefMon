@@ -38,6 +38,8 @@ def storeFile(peer_name, filename):
 	net.send(filename)
 	net.send(file_contents)
 
+	print(net.recv())
+
 	# Add the file to the filetable
 	filetable.addFile(peer_name, filename, str(net.getPeerInfo()))
 	net.done()
@@ -65,6 +67,7 @@ def retrieveFile(peer_name, filename):
 	file_contents = net.recv()
 	# file_contents = openSSL.decrypt(keyfile, encrypted_contents)
 
+	print(net.recv())
 	fileIO.writeFile(filename, file_contents)
 
 	net.done()
@@ -84,6 +87,8 @@ def deleteFile(peer_name, filename):
 
 	net.send('Delete')
 	net.send(filename)
+	
+	print(net.recv())
 
 	net.done()
 	filetable.removeFile(peer_name, filename)

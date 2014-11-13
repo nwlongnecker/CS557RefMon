@@ -8,12 +8,14 @@ class ServerSideConnection(object):
 		# Just running locally, so the IP is always this
 		ip = '127.0.0.1'
 		# Set the portno based on the peer we're using
-		if(peer_name == 'jack'):
+		if(peer_name == 'Jack'):
 			portno = 5571
-		elif(peer_name == 'jane'):
+		elif(peer_name == 'Jane'):
 			portno = 5572
-		elif(peer_name == 'joe'):
+		elif(peer_name == 'Joe'):
 			portno = 5573
+		else:
+			print("Valid users are: Jack, Jane, or Joe")
 		self.secure_socket = secure_context.createListeningServerSocket(
 		 		peer_name, ip, portno)
 

@@ -8,7 +8,7 @@ module type RESOURCE_MGR =
 
 		type command = operator * filename
 
-		type result 
+		type result = string
 
 		val execute :
 			string ->		(* What directory is this resource manager running in (for ease of use so all servers can run off the same code) *)
@@ -32,7 +32,7 @@ module type REFERENCE_MONITOR =
 
 		type request = principal* operator * filename
 
-		type result 
+		type result = string
 
 		val execute :
 			principal ->		(* Who is this reference monitor running as (for ease of use so all servers can run off the same code) *)
@@ -150,7 +150,7 @@ module RefMon : REFERENCE_MONITOR =
 								(OpenSSL.decrypt (host_name, encrypted_file, plaintext_file);
 								"Success")
 							else
-								"Failure"
+								"File does not exist"
 						| PUT ->
 							if Sys.file_exists encrypted_file then
 								Sys.remove encrypted_file;
@@ -166,7 +166,7 @@ module RefMon : REFERENCE_MONITOR =
 
 		type operator = ResMan.operator
 		type filename = string
-		type result = ResMan.result
+		type result = string
 
 		type principal =
 			| PERSON of string
@@ -641,7 +641,7 @@ let parse_execute host_name =
 	let operator = RefMon.get_operator Sys.argv.(4) in
 	let filename = Sys.argv.(5) in
 
-	ignore (RefMon.execute host_user (principal, operator, filename))
+	print_endline (RefMon.execute host_user (principal, operator, filename))
 ;;
 
 let parse_add_authorization host_name =

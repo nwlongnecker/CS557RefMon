@@ -5,6 +5,7 @@ import fileIO
 import re
 import dfs
 import filetable
+import refmon_client
 
 peer_name = parse_params.getUsername(server_side = False)
 
@@ -17,13 +18,17 @@ while True:
 	print('2. Store files')
 	print('3. Retrieve files')
 	print('4. Delete files')
-	print('5. Exit')
+	print('5. Add Authorization')
+	print('6. Delete Authorization')
+	print('7. Add Group Member')
+	print('8. Delete Group Member')
+	print('9. Exit')
 
 	accepted = False
 	while not accepted:
 		# Running this on python3; input does not evaluate data
-		value = input('1-5: ')
-		if re.match('\A[1-5]\Z', value):
+		value = input('1-9: ')
+		if re.match('\A[1-9]\Z', value):
 			accepted = True
 
 	if(value == '1'):
@@ -67,5 +72,13 @@ while True:
 		dfs.deleteFile(peer_name, filename)
 		print(filename, 'deleted')
 	elif(value == '5'):
+		refmon_client.add_authorization(peer_name)
+	elif(value == '6'):
+		refmon_client.delete_authorization(peer_name)
+	elif(value == '7'):
+		refmon_client.add_group_member(peer_name)
+	elif(value == '8'):
+		refmon_client.delete_group_member(peer_name)
+	elif(value == '9'):
 		print('Goodbye', peer_name)
 		sys.exit()

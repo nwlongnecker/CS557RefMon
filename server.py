@@ -26,4 +26,16 @@ while True:
 	elif(command == 'My_Files'):
 		server_methods.getFilenames(peer_name, net)
 
+	elif(command == 'Add_Authorization'):
+		server_methods.addAuthorization(peer_name, net)
+
+	elif(command == 'Delete_Authorization'):
+		server_methods.deleteAuthorization(peer_name, net)
+
+	elif(command == 'Add_Group_Member'):
+		server_methods.addGroupMember(peer_name, net)
+
+	elif(command == 'Delete_Group_Member'):
+		server_methods.deleteGroupMember(peer_name, net)
+
 	net.done()
